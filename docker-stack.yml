@@ -1,20 +1,34 @@
 ---
-# our version
-version: "0.1"
+
+version: "3.1"
 
 services:
-# change with our images
-  s3-dmd:
-    image: kalmykov/zenko-mongo-module
+  s3-data:
+    image: scality/s3server
     ports:
-      - "9990"
       - "9991"
     networks:
       - backend
-    depends_on:
-      - mongod
     environment:
       S3DATAPATH: /data
+      LISTEN_ADDR: 0.0.0.0
+    volumes:
+      - "s3-data:/data:rw"
+    command: npm run start_dataserver
+    deploy:
+      placement:
+        constraints:
+          - node.labels.io.zenko.type == storage
+
+  s3-metadata:
+    image: mongo_connector_image
+    ports:
+      - "9990"
+    networks:
+      - backend
+    depends_on:
+      - memcached
+    environment:
       S3METADATAPATH: /metadata
       LISTEN_ADDR: 0.0.0.0
     command: npm start
@@ -23,13 +37,12 @@ services:
         constraints:
           - node.labels.io.zenko.type == storage
 
-# change with our mongodb image
-  mongodb:
-    image: library/mongo
+  memcached:
+    image: library/memcached
     ports:
-      - "27017:27017"
-    # environment:
-    #   EXTRA_OPTIONS: "-I 10m"
+      - "11211:11211"
+    environment:
+      EXTRA_OPTIONS: "-I 10m"
     networks:
       - backend
     deploy:
@@ -42,7 +55,6 @@ services:
         constraints:
           - node.labels.io.zenko.type == storage
 
-# DO NOT CHANGE
   s3-front:
     image: scality/s3server
     ports:
@@ -51,15 +63,16 @@ services:
       - backend
       - frontend-dmz
     environment:
-      DATA_HOST: s3-dmd
-      METADATA_HOST: s3-dmd
+      DATA_HOST: s3-data
+      METADATA_HOST: s3-metadata
       REDIS_HOST: cache
       ENDPOINT: "${ENDPOINT:-zenko}"
     secrets:
       - s3-credentials
     command: npm run start_s3server
     depends_on:
-      - s3-dmd
+      - s3-data
+      - s3-metadata
       - cache
     deploy:
       mode: replicated
@@ -98,6 +111,10 @@ networks:
   backend:
   frontend:
   frontend-dmz:
+
+volumes:
+  s3-data:
+  s3-metadata:
 
 secrets:
   s3-credentials:

@@ -1,20 +1,17 @@
-# zenko-mongo-module
-Zenko Mongo Module
-
-#Overrides Dmd/Data and Dmd/Metadata
+# zenko-memcached-module
+Zenko Memcached Module
 
 To generate the docker image do:
 
 ```
-$ docker build -t kalmykov/zenko-mongo-module .
-$ docker push kalmykov/zenko-mongo-module
+$ docker build -t vrancurel/zenko-memcached-module .
+$ docker push vrancurel/zenko-memcached-module
 ```
 
-To run the mongo-module, do:
+To run the memcached-module, do:
 
 ```
 $ docker stack rm zenko-prod
 $ docker stack deploy -c docker-stack.yml zenko-prod
 ```
 
-# zenko-mongo-module
