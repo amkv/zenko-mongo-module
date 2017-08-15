@@ -139,6 +139,7 @@ mdServer.initMetadataService = function() {
 mdServer.startServer();
 
 class MemcachedFileStore extends arsenal.storage.data.file.DataFileStore {
+
     constructor(dataConfig, logApi) {
 	super(dataConfig, logApi);
 	console.log('filestore constructor');
