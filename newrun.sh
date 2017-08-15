@@ -3,7 +3,7 @@ docker rm -f $(docker ps -a -q)
 docker rmi -f $(docker images -q)
 
 clear_image="clear_image"
-testing_image="mongo_connector_image"
+testing_image="mongo_connector"
 CLEARIMAGE=./clear_image
 
 clear_images_exist=$(docker images | grep -e $clear_image | wc -l)

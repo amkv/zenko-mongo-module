@@ -21,7 +21,7 @@ services:
           - node.labels.io.zenko.type == storage
 
   s3-metadata:
-    image: mongo_connector_image
+    image: mongo_connector
     ports:
       - "9990"
     networks:
