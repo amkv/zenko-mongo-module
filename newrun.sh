@@ -1,3 +1,5 @@
+docker swarm leave -f
+
 # delete all images and containers
 docker rm -f $(docker ps -a -q)
 docker rmi -f $(docker images -q)
@@ -28,12 +30,13 @@ docker build -t $testing_image .
 
 echo "export SCALITY_ACCESS_KEY_ID=accessKey1
 export SCALITY_SECRET_ACCESS_KEY=verySecretKey1" > secrets.txt
-docker swarm leave -f
+
 docker stack rm zenko-prod
-docker swarm init --advertise-addr 192.168.99.100
+docker swarm init
 DOCKERID="$(docker node ls -q)"
 docker node update --label-add io.zenko.type=storage $DOCKERID
 export AWS_SECRET_ACCESS_KEY=verySecretKey1
 export AWS_ACCESS_KEY_ID=accessKey1
+export ENDPOINT=127.0.0.1
 docker stack deploy -c docker-stack.yml zenko-prod
 docker service ls
