@@ -1,0 +1,16 @@
+Host name has been modified to zenko
+Note: In your /etc/hosts file on Linux, OS X, or Unix with root permissions, make sure to associate 127.0.0.1 with zenko
+NODE_VERSION=6.11.2
+HOSTNAME=eb84b5858325
+SCALITY_ACCESS_KEY_ID=accessKey1
+DATA_HOST=s3-data
+NPM_CONFIG_LOGLEVEL=info
+REDIS_HOST=cache
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PWD=/usr/src/app
+METADATA_HOST=s3-metadata
+SCALITY_SECRET_ACCESS_KEY=verySecretKey1
+ENDPOINT=zenko
+SHLVL=0
+HOME=/root
+YARN_VERSION=0.27.5

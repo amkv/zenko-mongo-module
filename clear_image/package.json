@@ -1,10 +1,10 @@
 {
-  "name": "zenko-memcached-module",
+  "name": "zenko-mongo-module",
   "engines": {
     "node": "6.9.5"
   },
   "version": "0.0.1",
-  "description": "Overrides default MD backend by memcached",
+  "description": "Overrides default MD backend by mongo",
   "main": "index.js",
   "scripts": {
     "ft_test": "mocha tests/functional",
@@ -12,17 +12,17 @@
     "test": "mocha tests/unit",
     "start": "node index.js"
   },
-  "repository": "vrancurel/zenko-memcached-module",
+  "repository": "kalmykov/zenko-mongo-module",
   "keywords": [
     "zk",
     "monitoring"
   ],
-  "author": "Vianney Rancurel",
+  "author": "Artem Kalmykov",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/zenko-memcached-module/issues"
+    "url": "https://github.com/amkv/zenko-mongo-module/issues"
   },
-  "homepage": "https://github.com/zenko-memcached-module#readme",
+  "homepage": "https://github.com/amkv/zenko-mongo-module#readme",
   "devDependencies": {
     "mocha": "",
     "eslint": "^2.4.0",
@@ -31,7 +31,8 @@
     "eslint-plugin-react": "4.2.3"
   },
   "dependencies": {
-    "memcached": "~2.2.2",
+    "mongodb": "2.2.31",
+    "assert": "1.4.1",
     "arsenal": "scality/Arsenal",
     "werelogs": "scality/werelogs"
   }

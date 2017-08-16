@@ -27,7 +27,7 @@ services:
     networks:
       - backend
     depends_on:
-      - memcached
+      - s3-mongo
     environment:
       S3METADATAPATH: /metadata
       LISTEN_ADDR: 0.0.0.0
@@ -37,12 +37,12 @@ services:
         constraints:
           - node.labels.io.zenko.type == storage
 
-  memcached:
-    image: library/memcached
+  s3-mongo:
+    image: library/mongo
     ports:
-      - "11211:11211"
-    environment:
-      EXTRA_OPTIONS: "-I 10m"
+      - "27017:27017"
+    # environment:
+    #   EXTRA_OPTIONS: "-I 10m"
     networks:
       - backend
     deploy:
@@ -58,7 +58,7 @@ services:
   s3-front:
     image: scality/s3server
     ports:
-      - "8000"
+      - "8000:8000"
     networks:
       - backend
       - frontend-dmz
@@ -75,6 +75,8 @@ services:
       - s3-metadata
       - cache
     deploy:
+      restart_policy:
+        condition: on-failure
       mode: replicated
       update_config:
         parallelism: 1
@@ -88,24 +90,24 @@ services:
     networks:
       - backend
 
-  lb:
-    image: zenko/loadbalancer
-    ports:
-      - "80:80"
-    environment:
-      LISTEN_PORT: 80
-      UPSTREAM_SERVER: "s3-front:8000"
-    networks:
-      - frontend
-      - frontend-dmz
-    depends_on:
-      - s3-front
-    deploy:
-      mode: global
-      update_config:
-        parallelism: 1
-        delay: "10s"
-        monitor: "5s"
+  # lb:
+  #   image: zenko/loadbalancer
+  #   ports:
+  #     - "80:80"
+  #   environment:
+  #     LISTEN_PORT: 80
+  #     UPSTREAM_SERVER: "s3-front:8000"
+  #   networks:
+  #     - frontend
+  #     - frontend-dmz
+  #   depends_on:
+  #     - s3-front
+  #   deploy:
+  #     mode: global
+  #     update_config:
+  #       parallelism: 1
+  #       delay: "10s"
+  #       monitor: "5s"
 
 networks:
   backend:

@@ -1,17 +1,10 @@
 # zenko-memcached-module
-Zenko Memcached Module
+Zenko Mongo Module
 
 To generate the docker image do:
+change docker swarm option (--advertise-addr 192.168.99.100) by your own
+
 
 ```
-$ docker build -t vrancurel/zenko-memcached-module .
-$ docker push vrancurel/zenko-memcached-module
+$ sh newrun.sh
 ```
-
-To run the memcached-module, do:
-
-```
-$ docker stack rm zenko-prod
-$ docker stack deploy -c docker-stack.yml zenko-prod
-```
-
