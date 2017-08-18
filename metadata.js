@@ -37,21 +37,17 @@ function startMetaDataServer(logger, logOptions, url)
 
         dbService.registerAsyncAPI({
             put: (env, key, value, options, cb) => {
+
                 if (key === 'users..bucket')
                     key = 'usersbucket'
-
-
                 // if (key === "")
                 //     key = "notempty"
 
                 MongoClient.connect(url, function(err, db) {
-                    // console.log("We are connected to MongoDB");
                     db.collection(key, function(err, res) {
                         console.log('collection created:', key);
                         db.collection(key).insertOne(JSON.parse(value), function(err, result) {
-                            // console.log(result);
                             if (!err) console.log('value stored in the Mongo');
-                            // cb(result);
                             db.close();
                             cb(result);
                         });
@@ -59,11 +55,11 @@ function startMetaDataServer(logger, logOptions, url)
                 });
 
                 console.log('-------------------------put-------------------------');
-                console.log('env == \n', env);
-                console.log('key == \n', key);
-                console.log('value == \n', value);
-                console.log('options == \n', options);
-                console.log('callback == \n', cb);
+                // console.log('env == \n', env);
+                // console.log('key == \n', key);
+                // console.log('value == \n', value);
+                // console.log('options == \n', options);
+                // console.log('callback == \n', cb);
                 cb(1, "test");
                 // cb(null, {"sf": 123});
             },
