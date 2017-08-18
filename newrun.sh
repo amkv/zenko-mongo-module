@@ -4,7 +4,9 @@
 STACK_NAME="zz"
 # Depending on your Docker settings
 # ADVERTISE_ADDR=""
-ADVERTISE_ADDR="--advertise-addr 192.168.99.100"
+ADVERTISE_ADDR="--advertise-addr $(docker-machine ip)"
+# ADVERTISE_ADDR="--advertise-addr 10.0.2.15"
+
 AWS_ACCESS_KEY_ID="accessKey1"
 AWS_SECRET_ACCESS_KEY="verySecretKey1"
 BASE_IMAGE_NAME="clear_image"
@@ -37,6 +39,7 @@ if [ "$1" == "--erase" ]; then
     DEBUG=true
     docker rm -f $(docker ps -a -q)
     docker rmi -f $(docker images -q)
+    # docker volume rm $(docker volume ls -q)
     echo "ALL images and containers deleted"
 fi
 
@@ -69,13 +72,13 @@ else
 fi
 
 # create module layer based on Base image
-# if $DEBUG; then
-#     docker build -t $MODULE_IMAGE_NAME .
-# else
-#     docker build -t $MODULE_IMAGE_NAME . > /dev/null 2>&1
-# fi
+if $DEBUG; then
+    docker build -t $MODULE_IMAGE_NAME .
+else
+    docker build -t $MODULE_IMAGE_NAME . > /dev/null 2>&1
+fi
 # push image to docker hub
-# docker push $MODULE_IMAGE_NAME
+docker push $MODULE_IMAGE_NAME
 
 # exporting credentials for S3
 echo "export SCALITY_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" > secrets.txt

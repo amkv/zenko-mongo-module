@@ -4,11 +4,12 @@ version: "3.1"
 
 services:
   s3-front:
-    image: scality/s3server:latest
     ports:
-      - "192.168.99.100:80:8000"
-    # networks:
+      - "80:8000"
+    image: scality/s3server:latest
+    networks:
     #   - backend
+      - frontend
     #   - frontend-dmz
     environment:
     #   DATA_HOST: s3-dmd
@@ -18,7 +19,7 @@ services:
       SCALITY_ACCESS_KEY_ID: "accessKey1"
       SCALITY_SECRET_ACCESS_KEY: "verySecretKey1"
     #   REDIS_HOST: cache
-    #   ENDPOINT: "${ENDPOINT:-zenko}"
+      ENDPOINT: "${ENDPOINT:-zenko}"
     # secrets:
     #   - s3-credentials
     command: npm run start_s3server
@@ -26,12 +27,13 @@ services:
     # depends_on:
     #   - s3-dmd
     #   - cache
-    # deploy:
-    #   mode: replicated
-    #   update_config:
-    #     parallelism: 1
-    #     delay: "10s"
-    #     monitor: "5s"
+    deploy:
+      mode: replicated
+    #   mode: global
+      update_config:
+        parallelism: 1
+        delay: "10s"
+        monitor: "5s"
 
   # s3-mongo:
   #   image: library/mongo
@@ -52,8 +54,8 @@ services:
   # s3-dmd:
   #   image: kalmykov/zenko-mongo-module:latest
   #   ports:
-  #     - "9990"
-  #     - "9991"
+  #     - "9990:9990"
+  #     - "9991:9991"
   #   networks:
   #     - backend
   #   depends_on:
@@ -83,7 +85,7 @@ services:
   #     LISTEN_PORT: 80
   #     UPSTREAM_SERVER: "s3-front:8000"
   #   networks:
-  #     - frontend
+  #   #   - frontend
   #     - frontend-dmz
   #   depends_on:
   #     - s3-front
@@ -94,9 +96,10 @@ services:
   #       delay: "10s"
   #       monitor: "5s"
 
-# networks:
-#   backend:
-  # frontend:
+networks:
+  # backend:
+  #   driver: overlay
+  frontend:
   # frontend-dmz:
 
 # secrets:

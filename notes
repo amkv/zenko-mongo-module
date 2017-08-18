@@ -7,7 +7,17 @@ userbucket / metastore
 
 
 aws s3 --endpoint http://192.168.99.100 mb s3://mybucket
+aws s3 --endpoint http://192.168.99.100 ls
+
+aws s3 --endpoint http://10.0.2.15 ls
+curl 192.168.99.100
 
 
-docker run  -it -p 192.168.99.100:80:8000 -e SCALITY_ACCESS_KEY_ID=accessKey1 -e SCALITY_SECRET_ACCESS_KEY=verySecretKey1 scality/s3server
+docker run  -it -p 80:8000 -e SCALITY_ACCESS_KEY_ID=accessKey1 -e SCALITY_SECRET_ACCESS_KEY=verySecretKey1 scality/s3server
 docker run  -it -p 192.168.99.100:80:8000 scality/s3server
+
+
+docker service update my-service --publish-add 80:8000
+docker service inspect --format="{{json .Endpoint.Spec.Ports}}"
+https://github.com/moby/moby/issues/26817
+https://docs.docker.com/engine/swarm/ingress/
