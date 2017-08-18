@@ -4,64 +4,69 @@ version: "3.1"
 
 services:
   s3-front:
-    image: scality/s3server
+    image: scality/s3server:latest
     ports:
       - "192.168.99.100:80:8000"
-    networks:
-      - backend
+    # networks:
+    #   - backend
     #   - frontend-dmz
     environment:
-      DATA_HOST: s3-dmd
-      METADATA_HOST: s3-dmd
+    #   DATA_HOST: s3-dmd
+    #   METADATA_HOST: s3-dmd
+    #   DATA_HOST: s3-front
+    #   METADATA_HOST: s3-front
+      SCALITY_ACCESS_KEY_ID: "accessKey1"
+      SCALITY_SECRET_ACCESS_KEY: "verySecretKey1"
     #   REDIS_HOST: cache
-      ENDPOINT: "${ENDPOINT:-zenko}"
-    secrets:
-      - s3-credentials
+    #   ENDPOINT: "${ENDPOINT:-zenko}"
+    # secrets:
+    #   - s3-credentials
     command: npm run start_s3server
-    depends_on:
-      - s3-dmd
+    # command: env
+    # depends_on:
+    #   - s3-dmd
     #   - cache
-    deploy:
-      mode: replicated
-      update_config:
-        parallelism: 1
-        delay: "10s"
-        monitor: "5s"
+    # deploy:
+    #   mode: replicated
+    #   update_config:
+    #     parallelism: 1
+    #     delay: "10s"
+    #     monitor: "5s"
 
-  s3-mongo:
-    image: library/mongo
-    ports:
-      - "27017:27017"
-    networks:
-      - backend
-    deploy:
-      mode: replicated
-      update_config:
-        parallelism: 1
-        delay: "10s"
-        monitor: "5s"
-      placement:
-        constraints:
-          - node.labels.io.zenko.type == storage
+  # s3-mongo:
+  #   image: library/mongo
+  #   ports:
+  #     - "27017:27017"
+  #   networks:
+  #     - backend
+  #   deploy:
+  #     mode: replicated
+  #     update_config:
+  #       parallelism: 1
+  #       delay: "10s"
+  #       monitor: "5s"
+  #     placement:
+  #       constraints:
+  #         - node.labels.io.zenko.type == storage
 
-  s3-dmd:
-    image: kalmykov/zenko-mongo-module:latest
-    ports:
-      - "9990"
-      - "9991"
-    networks:
-      - backend
-    depends_on:
-      - s3-mongo
-    environment:
-      S3DATAPATH: /data
-      S3METADATAPATH: /metadata
-      LISTEN_ADDR: 0.0.0.0
-    command: npm start
-    deploy:
-      placement:
-        constraints:
-          - node.labels.io.zenko.type == storage
+  # s3-dmd:
+  #   image: kalmykov/zenko-mongo-module:latest
+  #   ports:
+  #     - "9990"
+  #     - "9991"
+  #   networks:
+  #     - backend
+  #   depends_on:
+  #     - s3-mongo
+  #   environment:
+  #     S3DATAPATH: /data
+  #     S3METADATAPATH: /metadata
+  #     LISTEN_ADDR: 0.0.0.0
+  #   command: npm start
+  #   deploy:
+  #     placement:
+  #       constraints:
+  #         - node.labels.io.zenko.type == storage
 
   # cache:
   #   image: redis:alpine
@@ -89,11 +94,11 @@ services:
   #       delay: "10s"
   #       monitor: "5s"
 
-networks:
-  backend:
+# networks:
+#   backend:
   # frontend:
   # frontend-dmz:
 
-secrets:
-  s3-credentials:
-    file: ./secrets.txt
+# secrets:
+#   s3-credentials:
+#     file: ./secrets.txt

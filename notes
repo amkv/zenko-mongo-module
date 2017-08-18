@@ -1,0 +1,13 @@
+metastore
+bucket of buckets
+make bucket command (check)
+if does not exist --- then creat bucketuser buckets
+
+userbucket / metastore
+
+
+aws s3 --endpoint http://192.168.99.100 mb s3://mybucket
+
+
+docker run  -it -p 192.168.99.100:80:8000 -e SCALITY_ACCESS_KEY_ID=accessKey1 -e SCALITY_SECRET_ACCESS_KEY=verySecretKey1 scality/s3server
+docker run  -it -p 192.168.99.100:80:8000 scality/s3server

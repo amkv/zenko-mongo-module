@@ -69,13 +69,13 @@ else
 fi
 
 # create module layer based on Base image
-if $DEBUG; then
-    docker build -t $MODULE_IMAGE_NAME .
-else
-    docker build -t $MODULE_IMAGE_NAME . > /dev/null 2>&1
-fi
+# if $DEBUG; then
+#     docker build -t $MODULE_IMAGE_NAME .
+# else
+#     docker build -t $MODULE_IMAGE_NAME . > /dev/null 2>&1
+# fi
 # push image to docker hub
-docker push $MODULE_IMAGE_NAME
+# docker push $MODULE_IMAGE_NAME
 
 # exporting credentials for S3
 echo "export SCALITY_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" > secrets.txt

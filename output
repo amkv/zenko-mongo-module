@@ -1,0 +1,51 @@
+env ==
+ { requestLogger:
+   RequestLogger {
+     uids: [ '0b1896eccb4492633bf6' ],
+     entries: [],
+     fields: { name: 'Zenko-Mongo' },
+     logLevel: 'debug',
+     dumpThreshold: 'error',
+     endLevel: 'info',
+     endLogger: EndLogger { logger: [Circular], fields: {} },
+     sLogger: SimpleLogger { name: 'werelogs', streams: [Object], hostname: '1cecc80fae81' },
+     startTime: [ 16188, 886645254 ],
+     elapsedTime: null },
+  subLevel: [ '__metastore' ] }
+key ==
+ users.bucket
+value ==
+ {"acl":{"Canned":"private","FULL_CONTROL":[],"WRITE":[],"WRITE_ACP":[],"READ":[],"READ_ACP":[]},"name":"users..bucket","owner":"admin","ownerDisplayName":"admin","creationDate":"2017-08-18T01:37:27.385Z","mdBucketModelVersion":5,"transient":false,"deleted":false,"serverSideEncryption":null,"versioningConfiguration":null,"locationConstraint":null,"cors":null,"replicationConfiguration":null}
+options ==
+ {}
+callback ==
+ (err, data) => {
+                    cb(flattenError(err), data);
+                }
+
+
+-------------------------put-------------------------
+env ==
+ { requestLogger:
+   RequestLogger {
+     uids: [ '5a7339bd0c4198145321' ],
+     entries: [],
+     fields: { name: 'Zenko-Mongo' },
+     logLevel: 'debug',
+     dumpThreshold: 'error',
+     endLevel: 'info',
+     endLogger: EndLogger { logger: [Circular], fields: {} },
+     sLogger: SimpleLogger { name: 'werelogs', streams: [Object], hostname: '1cecc80fae81' },
+     startTime: [ 16227, 311325744 ],
+     elapsedTime: null },
+  subLevel: [ '__metastore' ] }
+key ==
+ users.bucket
+value ==
+ {"acl":{"Canned":"private","FULL_CONTROL":[],"WRITE":[],"WRITE_ACP":[],"READ":[],"READ_ACP":[]},"name":"users..bucket","owner":"admin","ownerDisplayName":"admin","creationDate":"2017-08-18T01:38:05.806Z","mdBucketModelVersion":5,"transient":false,"deleted":false,"serverSideEncryption":null,"versioningConfiguration":null,"locationConstraint":null,"cors":null,"replicationConfiguration":null}
+options ==
+ {}
+callback ==
+ (err, data) => {
+                    cb(flattenError(err), data);
+                }
