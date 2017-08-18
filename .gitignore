@@ -1,2 +1,6 @@
 logs
 tmp.js
+_MetadataFileServer.js
+_RESTServer.js
+index_orig.js
+secrets.txt
