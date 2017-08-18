@@ -2,7 +2,7 @@
 
 const arsenal = require('arsenal');
 const werelogs = require('werelogs');
-const MongoClient = require('mongodb').MongoClient;
+// const MongoClient = require('mongodb').MongoClient;
 // const assert = require('assert');
 const startMetaDataServer = require('./metadata')
 const startDataServer = require('./data')
@@ -17,7 +17,7 @@ const logOptions = {
 const logger = new werelogs.Logger('Zenko-Mongo');
 
 // create connection to database **********************************************
-var url = 'mongodb://192.168.99.100:27017/mydb';
+var url = 'mongodb://192.168.99.100:27017/zenko';
 // var DBconnect = MongoClient.connect(url, function(err, db) {
 //   if(!err) {
 //     console.log("We are connected to MongoDB");
