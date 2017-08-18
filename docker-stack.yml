@@ -3,25 +3,30 @@
 version: "3.1"
 
 services:
-
-  s3-dmd:
-    image: mongo_connector
+  s3-front:
+    image: scality/s3server
     ports:
-      - "9990"
-      - "9991"
+      - "192.168.99.100:80:8000"
     networks:
       - backend
-    depends_on:
-      - s3-mongo
+    #   - frontend-dmz
     environment:
-      S3DATAPATH: /data
-      S3METADATAPATH: /metadata
-      LISTEN_ADDR: 0.0.0.0
-    command: npm start
+      DATA_HOST: s3-dmd
+      METADATA_HOST: s3-dmd
+    #   REDIS_HOST: cache
+      ENDPOINT: "${ENDPOINT:-zenko}"
+    secrets:
+      - s3-credentials
+    command: npm run start_s3server
+    depends_on:
+      - s3-dmd
+    #   - cache
     deploy:
-      placement:
-        constraints:
-          - node.labels.io.zenko.type == storage
+      mode: replicated
+      update_config:
+        parallelism: 1
+        delay: "10s"
+        monitor: "5s"
 
   s3-mongo:
     image: library/mongo
@@ -39,61 +44,55 @@ services:
         constraints:
           - node.labels.io.zenko.type == storage
 
-  s3-front:
-    image: scality/s3server
+  s3-dmd:
+    image: kalmykov/zenko-mongo-module:latest
     ports:
-      - "8000"
+      - "9990"
+      - "9991"
     networks:
       - backend
-      - frontend-dmz
-    environment:
-      DATA_HOST: s3-dmd
-      METADATA_HOST: s3-dmd
-      REDIS_HOST: cache
-      ENDPOINT: "${ENDPOINT:-zenko}"
-    secrets:
-      - s3-credentials
-    command: npm run start_s3server
     depends_on:
-      - s3-dmd
-      - cache
-    deploy:
-      mode: replicated
-      update_config:
-        parallelism: 1
-        delay: "10s"
-        monitor: "5s"
-
-  cache:
-    image: redis:alpine
-    ports:
-      - "6379"
-    networks:
-      - backend
-
-  lb:
-    image: zenko/loadbalancer
-    ports:
-      - "80:80"
+      - s3-mongo
     environment:
-      LISTEN_PORT: 80
-      UPSTREAM_SERVER: "s3-front:8000"
-    networks:
-      - frontend
-      - frontend-dmz
-    depends_on:
-      - s3-front
+      S3DATAPATH: /data
+      S3METADATAPATH: /metadata
+      LISTEN_ADDR: 0.0.0.0
+    command: npm start
     deploy:
-      mode: global
-      update_config:
-        parallelism: 1
-        delay: "10s"
-        monitor: "5s"
+      placement:
+        constraints:
+          - node.labels.io.zenko.type == storage
+
+  # cache:
+  #   image: redis:alpine
+  #   ports:
+  #     - "6379"
+  #   networks:
+  #     - backend
+
+  # lb:
+  #   image: zenko/loadbalancer
+  #   ports:
+  #     - "80:80"
+  #   environment:
+  #     LISTEN_PORT: 80
+  #     UPSTREAM_SERVER: "s3-front:8000"
+  #   networks:
+  #     - frontend
+  #     - frontend-dmz
+  #   depends_on:
+  #     - s3-front
+  #   deploy:
+  #     mode: global
+  #     update_config:
+  #       parallelism: 1
+  #       delay: "10s"
+  #       monitor: "5s"
 
 networks:
   backend:
-  frontend:
-  frontend-dmz:
+  # frontend:
+  # frontend-dmz:
 
 secrets:
   s3-credentials:

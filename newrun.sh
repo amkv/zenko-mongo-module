@@ -1,42 +1,107 @@
-docker stack rm zz
-docker swarm leave -f
+#!/bin/zsh
+# Author: Artem Kalmykov
 
-# delete all images and containers
-docker rm -f $(docker ps -a -q)
-docker rmi -f $(docker images -q)
+STACK_NAME="zz"
+# Depending on your Docker settings
+# ADVERTISE_ADDR=""
+ADVERTISE_ADDR="--advertise-addr 192.168.99.100"
+AWS_ACCESS_KEY_ID="accessKey1"
+AWS_SECRET_ACCESS_KEY="verySecretKey1"
+BASE_IMAGE_NAME="clear_image"
+MODULE_IMAGE_NAME="kalmykov/zenko-mongo-module"
+CLEAR_IMAGE_PATH=./clear_image
 
-clear_image="clear_image"
-testing_image="mongo_connector"
-CLEARIMAGE=./clear_image
-
-clear_images_exist=$(docker images | grep -e $clear_image | wc -l)
-if [ $clear_images_exist -eq 0 ]; then
-    docker build -t $clear_image $CLEARIMAGE
-    echo "image created: $clear_image"
-else
-    echo "image exist: $clear_image"
+# check if Docker is running (lab computers)
+RET="$(docker images)"
+if echo "Cannot connect to the Docker daemon" | grep -q "$RET"; then
+    exit 0
 fi
 
-is_running=$(docker images | grep -e $testing_image | wc -l)
-if [ $is_running -gt 0 ]; then
-    victim=$(docker images | grep -e $testing_image)
+# set debug
+DEBUG=false
+if [ "$1" == "-d" ]; then
+    DEBUG=true
+fi
+
+# remove docker stack
+docker stack rm $STACK_NAME
+# leave from docker swarm mode
+if $DEBUG; then
+    docker swarm leave -f
+else
+    docker swarm leave -f > /dev/null 2>&1
+fi
+
+# BE CAREFULL, delete ALL images and containers
+if [ "$1" == "--erase" ]; then
+    DEBUG=true
+    docker rm -f $(docker ps -a -q)
+    docker rmi -f $(docker images -q)
+    echo "ALL images and containers deleted"
+fi
+
+# check if base image exist
+BASE_IMAGE_EXIST=$(docker images | grep -e $BASE_IMAGE_NAME | wc -l)
+if [ $BASE_IMAGE_EXIST -eq 0 ]; then
+    if $DEBUG; then
+        docker build -t $BASE_IMAGE_NAME $CLEAR_IMAGE_PATH
+    else
+        docker build -t $BASE_IMAGE_NAME $CLEAR_IMAGE_PATH > /dev/null 2>&1
+    fi
+    echo "image created: $BASE_IMAGE_NAME"
+else
+    echo "image already exist: $BASE_IMAGE_NAME"
+fi
+
+# check if module image exist
+MODULE_IMAGE_EXIST=$(docker images | grep -e $MODULE_IMAGE_NAME | wc -l)
+if [ $MODULE_IMAGE_EXIST -gt 0 ]; then
+    victim=$(docker images | grep -e $MODULE_IMAGE_NAME)
     arr=(`echo ${victim}`);
-    docker rmi -f ${arr[2]}
-    echo "image deleted: $testing_image"
+    if $DEBUG; then
+        docker rmi -f ${arr[2]}
+    else
+        docker rmi -f ${arr[2]} > /dev/null 2>&1
+    fi
+    echo "image deleted: $MODULE_IMAGE_NAME"
 else
-    echo "image not runned: $testing_image"
+    echo "image not exist: $MODULE_IMAGE_NAME"
 fi
 
-docker build -t $testing_image .
+# create module layer based on Base image
+if $DEBUG; then
+    docker build -t $MODULE_IMAGE_NAME .
+else
+    docker build -t $MODULE_IMAGE_NAME . > /dev/null 2>&1
+fi
+# push image to docker hub
+docker push $MODULE_IMAGE_NAME
 
-echo "export SCALITY_ACCESS_KEY_ID=accessKey1
-export SCALITY_SECRET_ACCESS_KEY=verySecretKey1" > secrets.txt
+# exporting credentials for S3
+echo "export SCALITY_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" > secrets.txt
+echo "export SCALITY_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> secrets.txt
+# exporting credentials for local enviroment
+export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 
-docker swarm init --advertise-addr 192.168.99.100
-DOCKERID="$(docker node ls -q)"
-docker node update --label-add io.zenko.type=storage $DOCKERID
-export AWS_SECRET_ACCESS_KEY=verySecretKey1
-export AWS_ACCESS_KEY_ID=accessKey1
-docker stack deploy -c docker-stack.yml zz
+# initializing swam mode
+if $DEBUG; then
+    docker swarm init $ADVERTISE_ADDR
+else
+    docker swarm init $ADVERTISE_ADDR > /dev/null 2>&1
+fi
+
+# linking labels
+docker node update --label-add io.zenko.type=storage $(docker node ls -q)
+# deploy the stack of services
+docker stack deploy -c docker-stack.yml $STACK_NAME
+
+# display running stack
 docker service ls
 echo "docker service ls"
+
+# open Application
+open -a Kitematic
+
+# run tests
+# ...
