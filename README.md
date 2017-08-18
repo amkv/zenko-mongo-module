@@ -1,17 +1,11 @@
-# zenko-memcached-module
-Zenko Memcached Module
+# zenko-mongo-module
+Zenko Mongo Module
+
+This project is made for [Zenko](http://www.zenko.io/) (Multi-Cloud Data Controller) during the Hackaton at [42 US](http://42.us.org) campus.
+Read about this event [here](http://www.zenko.io/blog/zenko-hackathon-brings-challenge-na-team-loves/)
 
 To generate the docker image do:
 
 ```
-$ docker build -t vrancurel/zenko-memcached-module .
-$ docker push vrancurel/zenko-memcached-module
+$ sh newrun.sh
 ```
-
-To run the memcached-module, do:
-
-```
-$ docker stack rm zenko-prod
-$ docker stack deploy -c docker-stack.yml zenko-prod
-```
-
